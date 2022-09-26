@@ -1,13 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
-  <script>
 
+  <script>
+    let urlField;
+    let content;
+    let methodField;
+    let nameField;
+    let ageField;
+
+    function handleResponse(response, body) {
+      const codeHeaders = {
+        200: 'Success',
+        201: 'Created',
+        204: 'Updated (No Content)',
+        400: 'Bad Request',
+        404: 'Not Found'
+      };
+
+      content.innerHTML = `<h1>${codeHeaders[response.status]}</h1>`;
+
+      if (!body) {
+        return;
+      }
+
+      if (response.status === 200) {
+        content.innerHTML += `<p>${JSON.stringify(body)}</p>`;
+      } else {
+        for (const key in body) {
+          const p = document.createElement('p');
+          p.textContent = `${key}: ${body[key]}`;
+          content.appendChild(p);
+        }
+      }
+    }
+
+
+    window.onload = () => {
+      urlField = document.querySelector('#urlField');
+      content = document.querySelector('#content');
+      methodField = document.querySelector("#methodSelect");
+      nameField = document.querySelector('#nameField');
+      ageField = document.querySelector('#ageField');
+
+      document.querySelector('#getUser').onclick = async (e) => {
+        e.preventDefault();
+        const method = methodField.value;
+        const response = await fetch(urlField.value, { headers: { 'accept': 'application/json' }, method: method });
+
+        if (method === 'get') {
+          handleResponse(response, await response.json());
+        } else {
+          handleResponse(response);
+        }
+      };
+
+      document.querySelector('#addUser').onclick = async (e) => {
+        e.preventDefault();
+        const response = await fetch('/addUser', { headers: { 'accept': 'application/json' }, method: 'POST', body: JSON.stringify({name: nameField.value, age: ageField.value})});
+
+        if (response.status !== 204) {
+          handleResponse(response, await response.json());
+        } else {
+          handleResponse(response);
+        }
+      };
+    }
   </script>
 </head>
+
 <body>
   <section id="top">
     <h3>POST Status Code Tests</h3>
@@ -15,8 +79,8 @@
       <label for="name">Name: </label>
       <input id="nameField" type="text" name="name" />
       <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
-      <input type="submit" value="Add User" />
+      <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
+      <input id="addUser" type="submit" value="Add User" />
     </form>
     <form id="userForm" action="/getUsers" method="get">
       <select id='urlField'>
@@ -27,10 +91,11 @@
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <input id="getUser" type="submit" value="Get User" />
     </form>
   </section>
   <section id="content">
   </section>
 </body>
+
 </html>

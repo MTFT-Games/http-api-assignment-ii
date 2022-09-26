@@ -1,0 +1,26 @@
+{
+  "name": "http-api-assignment-ii",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "test": "echo \"Tests complete.\"",
+    "pretest": "eslint ./src --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MTFT-Games/http-api-assignment-ii.git"
+  },
+  "author": "Noah Emke",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/MTFT-Games/http-api-assignment-ii/issues"
+  },
+  "homepage": "https://github.com/MTFT-Games/http-api-assignment-ii#readme",
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0"
+  }
+}
