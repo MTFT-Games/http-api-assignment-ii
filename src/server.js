@@ -28,29 +28,27 @@ try {
 }
 // #endregion
 
-
-
 // Struct to manage any cases that should be handled in a specific way
 const specialCases = {
-  '/': (request, response, acceptedTypes) => responses.serveFile(request, response, acceptedTypes, `${webdir}/client.html`),
+  '/': (request, response) => responses.serveFile(request, response, `${webdir}/client.html`),
+  '/getUsers': responses.getUsers,
+  '/addUser': (request, response) => responses.parseBody(request, response, responses.addUser),
 };
 
 function onRequest(request, response) {
   const parsedUrl = new URL(request.url, `http://${request.headers.host}`);
   const resolvedPath = path.normalize(parsedUrl.pathname);
-  const acceptedTypes = request.headers.accept.split(',');
 
   // Check if the requested resource is a special case
   if (specialCases[resolvedPath]) {
-    specialCases[resolvedPath](request, response, acceptedTypes, parsedUrl.searchParams);
+    specialCases[resolvedPath](request, response, parsedUrl.searchParams);
   } else if ((request.method === 'GET' || request.method === 'HEAD') && utilities.checkValidFile(webdir + resolvedPath)) {
     // If a file exists at the requested path, get it.
-    responses.serveFile(request, response, acceptedTypes, webdir + resolvedPath);
+    responses.serveFile(request, response, webdir + resolvedPath);
   } else {
     responses.sendCode(
       request,
       response,
-      acceptedTypes,
       404,
       '404NotFound',
       'The page or resource you have requested does not exist.',

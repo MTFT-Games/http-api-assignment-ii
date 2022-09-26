@@ -12,9 +12,9 @@ function checkValidFile(filePath) {
 
 // Determines the appropriate content type to return based on the
 // clients accepted types and the types available for this endpoint.
-function determineType(acceptedTypes, availableTypes) {
+function determineType(request, availableTypes) {
   // Search the clients accepted types for the first option available.
-  const type = acceptedTypes.find((element) => {
+  const type = request.headers.accept.split(',').find((element) => {
     // Get rid of version or quality values and presume the list is already
     // sorted by preference.
     const testedType = element.split(';')[0];
@@ -42,7 +42,7 @@ function determineType(acceptedTypes, availableTypes) {
 
   if (trimmedType === '*/*') {
     // If the client doesnt care, use default
-    return acceptedTypes[0];
+    return availableTypes[0];
   }
 
   // If a type was found, use it
@@ -60,4 +60,6 @@ function jsonToXml(json) {
   return xml;
 }
 
-module.exports = { checkValidFile, determineType, jsonToXml };
+module.exports = {
+  checkValidFile, determineType, jsonToXml,
+};
